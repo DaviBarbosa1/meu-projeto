@@ -17,8 +17,18 @@ class AlunoController {
             return response.status(error.statusCode || 500).json({ error: error.message });
         }
 
-
     }
+
+    async findUnique(request, response) {
+        try {
+            const { id } = request.params;
+            const aluno = await alunoService.findUnique(id);
+            return response.status(200).json(aluno);
+        } catch (error) {
+            return response.status(error.statusCode || 500).json({ error: error.message });
+        }
+    }
+
 
     async create(request, response) {
         try {
