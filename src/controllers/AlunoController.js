@@ -39,6 +39,15 @@ class AlunoController {
         }
     }
 
+    async remove(request, response) {
+        try {
+            const { id } = request.params;
+            await alunoService.remove(id);
+            return response.status(204).send();
+        } catch (error) {
+            return response.status(error.statusCode || 500).json({ error: error.message });
+        }
+    }
     async create(request, response) {
         try {
             const aluno = await alunoService.create(request.body);
@@ -49,5 +58,12 @@ class AlunoController {
     }
 
 }
+
+module.exports = {
+    findMany,
+    findUnique,
+    update,
+    remove
+};
 
 module.exports = new AlunoController();

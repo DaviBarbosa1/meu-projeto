@@ -60,17 +60,38 @@ class AlunoService {
             }
         }
 
+    }
+
+    async remove(id) {
+        const alunoId = Number(id);
+
+        const alunoExistente = await prisma.aluno.findUnique({ where: { id: alunoId } });
+        if (!alunoExistente) {
+            throw new AlunoNaoEncontradoError();
+        }
+
+        await prisma.aluno.delete({
+            where: { id: alunoId }
+        });
+    }
 
     async create(aluno) {
-            const { nome, email } = aluno;
-            if (!nome || !email) {
-                throw new AlunoInvalidoError();
-            }
-
-            const novoAluno = await prisma.aluno.create({ data: aluno });
-
-            return novoAluno;
+        const { nome, email } = aluno;
+        if (!nome || !email) {
+            throw new AlunoInvalidoError();
         }
+
+        const novoAluno = await prisma.aluno.create({ data: aluno });
+
+        return novoAluno;
     }
+}
+
+module.exports = {
+    findMany,
+    findUnique,
+    update,
+    remove
+};
 
 module.exports = new AlunoService();
