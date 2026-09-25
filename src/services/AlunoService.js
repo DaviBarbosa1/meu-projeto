@@ -40,18 +40,37 @@ class AlunoService {
         return aluno;
     }
 
+    async update(id, data) {
+        const alunoId = Number(id);
+        const { nome, email } = data;
+
+        if (!nome && !email) {
+            throw new ApiError('Informe ao menos um campo (nome ou email) para atualizar', 400);
+        }
+
+        const alunoExistente = await prisma.aluno.findUnique({ where: { id: alunoId } });
+        if (!alunoExistente) {
+            throw new AlunoNaoEncontradoError();
+        }
+
+        if (email && email !== alunoExistente.email) {
+            const emailEmUso = await prisma.aluno.findUnique({ where: { email } });
+            if (emailEmUso) {
+                throw new ApiError('O e-mail informado já está em uso por outro aluno', 400);
+            }
+        }
 
 
     async create(aluno) {
-        const { nome, email } = aluno;
-        if (!nome || !email) {
-            throw new AlunoInvalidoError();
+            const { nome, email } = aluno;
+            if (!nome || !email) {
+                throw new AlunoInvalidoError();
+            }
+
+            const novoAluno = await prisma.aluno.create({ data: aluno });
+
+            return novoAluno;
         }
-
-        const novoAluno = await prisma.aluno.create({ data: aluno });
-
-        return novoAluno;
     }
-}
 
 module.exports = new AlunoService();
